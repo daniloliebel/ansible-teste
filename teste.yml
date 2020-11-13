@@ -2,12 +2,20 @@
 - hosts: all
   become: true
   tasks:
-    - name: Buscar nome maquina
-      command: hostname
+    #    - name: Buscar nome maquina
+    #      command: hostname
 
-    - name: Update apt
-      apt: update_cache=yes
+    #    - name: Update apt
+    #      apt: update_cache=yes
 
-    - name: Install htop
-      apt:
-        name: htop
+    #    - name: Install htop
+    #      apt:
+    #        name: htop
+    - name: Cria container docker
+      uri:
+        url: http://jenkins.kmm.local:9090/job/teste/buildWithParameters?token=api&TESTE=123 # required. HTTP or HTTPS URL in the form (http|https)://host.domain[:port]/path
+        user: danilo.liebel # not required. A username for the module to use for Digest, Basic or WSSE authentication.
+        password: 11f181d497a6d6e7489e2532c628638ec0 # not required. A password for the module to use for Digest, Basic or WSSE authentication.
+        method: GET # not required. choices: GET;POST;PUT;HEAD;DELETE;OPTIONS;PATCH;TRACE;CONNECT;REFRESH. The HTTP method of the request or response. It MUST be uppercase.
+        timeout: 30 # not required. The socket level timeout in seconds
+        status_code: 201 # not required. A list of valid, numeric, HTTP status codes that signifies success of the request.
