@@ -20,3 +20,10 @@
         force_basic_auth: yes
         timeout: 30 # not required. The socket level timeout in seconds
         status_code: 201 # not required. A list of valid, numeric, HTTP status codes that signifies success of the request.
+    - name: Instalar nginx
+      apt:
+        name: nginx # not required. A list of package names, like C(foo), or package specifier with version, like C(foo=1.0). Name wildcards (fnmatch) like C(apt*) and version wildcards like C(foo=1.0*) are also supported.
+    - name: Download aplicacao
+      git:
+          dest: /tmp # required. The path of where the repository should be checked out. This parameter is required, unless C(clone) is set to C(no).
+          repo: https://daniloliebel:V1129power!@github.com/daniloliebel/ansible-teste.git # required. git, SSH, or HTTP(S) protocol address of the git repository.
