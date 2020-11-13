@@ -2,15 +2,6 @@
 - hosts: all
   become: true
   tasks:
-    #    - name: Buscar nome maquina
-    #      command: hostname
-
-    #    - name: Update apt
-    #      apt: update_cache=yes
-
-    #    - name: Install htop
-    #      apt:
-    #        name: htop
     - name: Cria container docker
       uri:
         url: http://jenkins.kmm.local:9090/job/teste/buildWithParameters?token=api&TESTE=123 # required. HTTP or HTTPS URL in the form (http|https)://host.domain[:port]/path
