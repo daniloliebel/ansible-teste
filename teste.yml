@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Buscar nome maquina
+      command: hostname
+
+    - name: Update apt
+      apt: update_cache=yes
+
+    - name: Install htop
+      apt:
+        name: htop
