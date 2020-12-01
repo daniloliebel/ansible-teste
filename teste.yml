@@ -1,5 +1,15 @@
 ---
 - hosts: all
+  vars_prompt:
+    - name: cliente
+      prompt: Insira o nome do cliente
+      private: no
+    - name: logstash_host
+      prompt: Insira o host do logstash server
+      private: no
+    - name: logstash_port
+      prompt: Insira a porta do logstash server
+      private: no
   become: true
   tasks:
     - name: Importar rpm
