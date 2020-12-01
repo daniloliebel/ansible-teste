@@ -2,30 +2,25 @@
 - hosts: all
   become: true
   tasks:
-    - name: Cria container docker
-      uri:
-        url: http://jenkins.kmm.local:9090/job/teste/buildWithParameters?token=api&TESTE=123 # required. HTTP or HTTPS URL in the form (http|https)://host.domain[:port]/path
-        user: danilo.liebel # not required. A username for the module to use for Digest, Basic or WSSE authentication.
-        password: 11f181d497a6d6e7489e2532c628638ec0 # not required. A password for the module to use for Digest, Basic or WSSE authentication.
-        method: GET # not required. choices: GET;POST;PUT;HEAD;DELETE;OPTIONS;PATCH;TRACE;CONNECT;REFRESH. The HTTP method of the request or response. It MUST be uppercase.
-        force_basic_auth: yes
-        timeout: 30 # not required. The socket level timeout in seconds
-        status_code: 201 # not required. A list of valid, numeric, HTTP status codes that signifies success of the request.
-    - name: Instalar nginx
-      apt:
-        name: nginx # not required. A list of package names, like C(foo), or package specifier with version, like C(foo=1.0). Name wildcards (fnmatch) like C(apt*) and version wildcards like C(foo=1.0*) are also supported.
-    - name: Inicia nginx
-      service:
-        name: nginx # required. Name of the service.
-        state: restarted # not required. choices: reloaded;restarted;started;stopped. C(started)/C(stopped) are idempotent actions that will not run commands unless necessary.  C(restarted) will always bounce the service.  C(reloaded) will always reload. B(At least one of state and enabled are required.) Note that reloaded will start the service if it is not already started, even if your chosen init system wouldn't normally.
-    - name: Limpa pasta www/html
+    - name: Importar rpm
+      shell: rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch
+    - name: Criar repo
+      copy:
+        src: elastic.repo
+        dest: /etc/yum.repos.d/
+    - name: Instalar filebeat
+      yum:
+        name: filebeat
+    - name: Deletar filebeat.yml padrao
       file:
-          path: /var/www/html/ # required. Path to the file being managed.
-          state: absent # not required. choices: absent;directory;file;hard;link;touch. If C(directory), all intermediate subdirectories will be created if they do not exist. Since Ansible 1.7 they will be created with the supplied permissions. If C(file), the file will NOT be created if it does not exist; see the C(touch) value or the M(copy) or M(template) module if you want that behavior.  If C(link), the symbolic link will be created or changed. Use C(hard) for hardlinks. If C(absent), directories will be recursively deleted, and files or symlinks will be unlinked. Note that C(absent) will not cause C(file) to fail if the C(path) does not exist as the state did not change. If C(touch) (new in 1.4), an empty file will be created if the C(path) does not exist, while an existing file or directory will receive updated file access and modification times (similar to the way `touch` works from the command line).
-    - name: Instalar GIT
-      apt:
-        name: git-core
-    - name: Download aplicacao
-      git:
-        dest: /var/www/html # required. The path of where the repository should be checked out. This parameter is required, unless C(clone) is set to C(no).
-        repo: https://daniloliebel:V1129power!@github.com/daniloliebel/ansible-teste.git # required. git, SSH, or HTTP(S) protocol address of the git repository.
+        state: absent
+        path: "/etc/filebeat/filebeat.yml"
+    - name: Criar filebeat.yml
+      template:
+        src: templates/filebeat.yml.j2
+        dest: /etc/filebeat/filebeat.yml
+    - name: Inicia filebeat
+      service:
+        name: filebeat
+        state: restarted
+        enabled: yes
